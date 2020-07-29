@@ -28,6 +28,7 @@ class UserCanCreateStatusesTest extends DuskTestCase
                     ->screenshot('create-status')
                     ->assertSee('mi primer status')
                     ->assertSee($user->name);
+                    sleep(2);
         });
     }
 }
