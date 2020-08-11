@@ -40,6 +40,7 @@ class ListStatusesTest extends TestCase
         $this->assertEquals(
             $status4->body,
             $response->json('data.0.body') //Tenia .id
-        );
-    }
+);
 }
+}
+
