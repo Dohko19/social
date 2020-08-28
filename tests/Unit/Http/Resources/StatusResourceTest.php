@@ -2,10 +2,12 @@
 
 namespace Tests\Unit\Http\Resources;
 
-use App\Http\Resources\CommentResource;
-use App\Models\Status;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Models\Comment;
 use Tests\TestCase;
+use App\Models\Status;
+use App\Http\Resources\StatusResource;
+use App\Http\Resources\CommentResource;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class StatusResourceTest extends TestCase
 {
@@ -16,16 +18,52 @@ class StatusResourceTest extends TestCase
      * @test
      */
 
-    public function a_status_resources_must_have_the_necesary_fields()
+    public function a_status_resources_must_have_the_necessary_fields()
     {
-        $comment = factory(Status::class)->create();
-
-        $commentResource = CommentResource::make($comment)->resolve();
+        $status = factory(Status::class)->create();
+        factory(Comment::class)->create(['status_id' => $status->id]);
+        $statusResource = StatusResource::make($status)->resolve();
 
         $this->assertEquals(
-            $comment->body, 
-            $commentResource['body']
+            $status->id,
+            $statusResource['id']
         );
-        
+        $this->assertEquals(
+            $status->body,
+            $statusResource['body']
+        );
+        $this->assertEquals(
+            $status->user->name,
+            $statusResource['user_name']
+        );
+        $this->assertEquals(
+            'https://avatarfiles.alphacoders.com/141/141175.gif',
+            $statusResource['user_avatar']
+        );
+
+        $this->assertEquals(
+            $status->created_at->diffForHumans(),
+            $statusResource['ago']
+        );
+
+        $this->assertEquals(
+            false,
+            $statusResource['is_liked']
+        );
+
+        $this->assertEquals(
+            0,
+            $statusResource['likes_count']
+        );
+//        dd($statusResource['comments']->first()->resource);
+        $this->assertEquals(
+            CommentResource::class,
+            $statusResource['comments']->collects
+        );
+        $this->assertInstanceOf(
+            Comment::class,
+            $statusResource['comments']->first()->resource
+    );
+
     }
 }

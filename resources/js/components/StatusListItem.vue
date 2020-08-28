@@ -10,33 +10,27 @@
                     </div>
                 </div>
                 <p class="card-text text-secondary" v-text="status.body"></p>
-
             </div>
             <div class="card-footer p-2 d-flex justify-content-between align-items-center">
-                <button
-                    class="btn btn-link"
-                    v-if="status.is_liked"
-                    dusk="unlike-btn"
-                    @click="unlike(status)">
-                    <strong><i class="fas fa-thumbs-up text-primary btn-sm mr-1"></i> TE GUSTA</strong>
-                </button>
-                <button
-                    class="btn btn-link"
-                    v-else dusk="like-btn"
-                    @click="like(status)">
-                    <i class="far fa-thumbs-up text-primary btn-sm mr-1"></i> ME GUSTA
-                </button>
+                <like-btn
+                    :status="status"
+                ></like-btn>
                 <div class="mr-2">
                     <i class="far fa-thumbs-up text-secondary"></i>
                     <span dusk="likes-count">{{ status.likes_count }}</span>
                 </div>
+                <form @submit.prevent="addComment">
+                    <textarea name="comment" v-model="newComment"></textarea>
+                    <button dusk="comment-btn">Enviar</button>
+                </form>
+                <div v-for="comment in comments">{{ comment.body }}</div>
             </div>
-
         </div>
     </div>
 </template>
 
 <script>
+    import LikeBtn from './LiKeBtn'
     export default {
         props: {
             status: {
@@ -44,25 +38,20 @@
                 required: true
             }
         },
+        components: { LikeBtn },
+        data(){
+            return {
+                newComment: '',
+                comments: this.status.comments
+            }
+        },
         methods: {
-            like(status){
-                axios.post(`/statuses/${status.id}/likes`)
-                    .then((res) => {
-                        status.is_liked = true;
-                        status.likes_count++;
-                    }).catch((err) => {
-                    console.log(err)
-                });
-            },
-            unlike(status){
-                axios.delete(`/statuses/${status.id}/likes`)
-                    .then((res) => {
-                        status.is_liked = false;
-                        status.likes_count--;
-
-                    }).catch((err) => {
-                    console.log(err)
-                });
+            addComment(){
+                axios.post(`/statuses/${this.status.id}/comments`, { body: this.newComment })
+                .then(res => {
+                    this.newComment = ''
+                    this.comments.push(res.data.data);
+                })
             }
         }
     }
