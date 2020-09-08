@@ -1986,6 +1986,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -2045,7 +2046,7 @@ __webpack_require__.r(__webpack_exports__);
     axios.get('/statuses').then(function (res) {
       _this.statuses = res.data.data;
     })["catch"](function (err) {
-      console.log(err);
+      console.log(err.response.data);
     });
     EventBus.$on('status-created', function (status) {
       _this.statuses.unshift(status);
@@ -2065,6 +2066,27 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _LiKeBtn__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./LiKeBtn */ "./resources/js/components/LiKeBtn.vue");
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -2123,6 +2145,8 @@ __webpack_require__.r(__webpack_exports__);
         _this.newComment = '';
 
         _this.comments.push(res.data.data);
+      })["catch"](function (err) {
+        console.log(err.response.data);
       });
     }
   }
@@ -37812,7 +37836,8 @@ var render = function() {
                 attrs: {
                   name: "body",
                   placeholder:
-                    "Que estas pensando " + _vm.currentUser.name + "?"
+                    "Que estas pensando " + _vm.currentUser.name + "?",
+                  required: ""
                 },
                 domProps: { value: _vm.body },
                 on: {
@@ -37955,56 +37980,118 @@ var render = function() {
             _c("span", { attrs: { dusk: "likes-count" } }, [
               _vm._v(_vm._s(_vm.status.likes_count))
             ])
-          ]),
-          _vm._v(" "),
-          _c(
-            "form",
-            {
-              on: {
-                submit: function($event) {
-                  $event.preventDefault()
-                  return _vm.addComment($event)
-                }
-              }
-            },
-            [
-              _c("textarea", {
-                directives: [
-                  {
-                    name: "model",
-                    rawName: "v-model",
-                    value: _vm.newComment,
-                    expression: "newComment"
-                  }
-                ],
-                attrs: { name: "comment" },
-                domProps: { value: _vm.newComment },
-                on: {
-                  input: function($event) {
-                    if ($event.target.composing) {
-                      return
-                    }
-                    _vm.newComment = $event.target.value
-                  }
+          ])
+        ],
+        1
+      ),
+      _vm._v(" "),
+      _c(
+        "div",
+        { staticClass: "card-footer" },
+        [
+          _vm._l(_vm.comments, function(comment) {
+            return _c("div", { staticClass: "mb-3" }, [
+              _c("img", {
+                staticClass: "rounded shadow-sm float-left mr-2",
+                attrs: {
+                  src: comment.user_avatar,
+                  alt: comment.user_name,
+                  width: "34px"
                 }
               }),
               _vm._v(" "),
-              _c("button", { attrs: { dusk: "comment-btn" } }, [
-                _vm._v("Enviar")
+              _c("div", { staticClass: "card border-0 shadow-sm" }, [
+                _c("div", { staticClass: "card-body p-2 text-secondary" }, [
+                  _c("a", { attrs: { href: "#" } }, [
+                    _c("strong", [_vm._v(_vm._s(comment.user_name))])
+                  ]),
+                  _vm._v(
+                    "\n                        " +
+                      _vm._s(comment.body) +
+                      "\n                    "
+                  )
+                ])
               ])
-            ]
-          ),
+            ])
+          }),
           _vm._v(" "),
-          _vm._l(_vm.comments, function(comment) {
-            return _c("div", [_vm._v(_vm._s(comment.body))])
-          })
+          _vm.isAuthenticated
+            ? _c(
+                "form",
+                {
+                  on: {
+                    submit: function($event) {
+                      $event.preventDefault()
+                      return _vm.addComment($event)
+                    }
+                  }
+                },
+                [
+                  _c("div", { staticClass: "d-flex align-items-center" }, [
+                    _c("img", {
+                      staticClass: "rounded shadow-sm mr-2",
+                      attrs: {
+                        src:
+                          "https://avatarfiles.alphacoders.com/141/141175.gif",
+                        alt: _vm.currentUser.user_name,
+                        width: "34px"
+                      }
+                    }),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "input-group" }, [
+                      _c("textarea", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.newComment,
+                            expression: "newComment"
+                          }
+                        ],
+                        staticClass: "form-control border-0 shadow-sm",
+                        attrs: {
+                          placeholder: "Escribe un Comentario...",
+                          name: "comment",
+                          rows: "1",
+                          required: ""
+                        },
+                        domProps: { value: _vm.newComment },
+                        on: {
+                          input: function($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.newComment = $event.target.value
+                          }
+                        }
+                      }),
+                      _vm._v(" "),
+                      _vm._m(0)
+                    ])
+                  ])
+                ]
+              )
+            : _vm._e()
         ],
         2
       )
     ])
   ])
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "input-group-append" }, [
+      _c(
+        "button",
+        { staticClass: "btn btn-primary", attrs: { dusk: "comment-btn" } },
+        [_vm._v("Enviar")]
+      )
+    ])
+  }
+]
 render._withStripped = true
 
 

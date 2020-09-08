@@ -26,5 +26,14 @@ class CommentResourceTest extends TestCase
             $comment->body,
             $commentResource['body']
         );
+        $this->assertEquals(
+            $comment->user->name,
+            $commentResource['user_name']
+        );
+
+        $this->assertEquals(
+            'https://avatarfiles.alphacoders.com/141/141175.gif',
+            $commentResource['user_avatar']
+        );
     }
 }

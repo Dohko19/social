@@ -19,11 +19,32 @@
                     <i class="far fa-thumbs-up text-secondary"></i>
                     <span dusk="likes-count">{{ status.likes_count }}</span>
                 </div>
-                <form @submit.prevent="addComment">
-                    <textarea name="comment" v-model="newComment"></textarea>
-                    <button dusk="comment-btn">Enviar</button>
+            </div>
+            <div class="card-footer">
+                <div v-for="comment in comments" class="mb-3">
+                    <img :src="comment.user_avatar" :alt="comment.user_name" width="34px" class="rounded shadow-sm float-left mr-2">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body p-2 text-secondary" >
+                            <a href="#"> <strong>{{ comment.user_name }}</strong> </a>
+                            {{ comment.body }}
+                        </div>
+                    </div>
+                </div>
+                <form @submit.prevent="addComment" v-if="isAuthenticated">
+                    <div class="d-flex align-items-center">
+                        <img src="https://avatarfiles.alphacoders.com/141/141175.gif" :alt="currentUser.user_name" width="34px" class="rounded shadow-sm mr-2">
+                        <div class="input-group">
+                            <textarea class="form-control border-0 shadow-sm" placeholder="Escribe un Comentario..."
+                                      name="comment"
+                                      v-model="newComment"
+                                      rows="1"
+                                      required></textarea>
+                            <div class="input-group-append">
+                                <button class="btn btn-primary" dusk="comment-btn">Enviar</button>
+                            </div>
+                        </div>
+                    </div>
                 </form>
-                <div v-for="comment in comments">{{ comment.body }}</div>
             </div>
         </div>
     </div>
@@ -49,8 +70,11 @@
             addComment(){
                 axios.post(`/statuses/${this.status.id}/comments`, { body: this.newComment })
                 .then(res => {
-                    this.newComment = ''
+                    this.newComment = '';
                     this.comments.push(res.data.data);
+                })
+                .catch(err => {
+                    console.log(err.response.data);
                 })
             }
         }
