@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\HasLikes;
 use App\User;
 use Illuminate\Database\Eloquent\Model;
 
 class Comment extends Model
 {
+    use HasLikes;
+
     protected $guarded = [];
 
     public function user()
@@ -14,8 +17,5 @@ class Comment extends Model
         return  $this->belongsTo(User::class);
     }
 
-    public function likes()
-    {
-        return $this->morphMany(Like::class, 'likeable');
-    }
+
 }

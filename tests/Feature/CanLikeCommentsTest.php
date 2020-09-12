@@ -40,11 +40,11 @@ class CanLikeCommentsTest extends TestCase
 
         $this->assertDatabaseHas('likes', ['user_id' => $user->id]);
 
-//        $this->actingAs($user)->deleteJson(route('comments.likes.destroy', $comment) );
-//
-//        $this->assertCount(1, $comment->fresh()->likes);
-//
-//        $this->assertDatabaseMissing('likes', ['user_id' => $user->id]);
+        $this->actingAs($user)->deleteJson(route('comments.likes.destroy', $comment) );
+
+        $this->assertCount(0, $comment->fresh()->likes);
+
+        $this->assertDatabaseMissing('likes', ['user_id' => $user->id]);
 
 
     }

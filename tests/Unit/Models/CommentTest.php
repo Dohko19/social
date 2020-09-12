@@ -35,4 +35,66 @@ class CommentTest extends TestCase
 
         $this->assertInstanceOf(Like::class, $comment->likes->first() );
     }
+
+    /**  @test */
+    public function a_comment_can_be_like_and_unlike()
+    {
+        $status = factory(Comment::class)->create();
+
+        $this->actingAs( factory(User::class)->create());
+
+        $status->like();
+
+        $this->assertEquals(1, $status->fresh()->likes->count() );
+
+        $status->unlike();
+
+        $this->assertEquals(0, $status->fresh()->likes->count() );
+    }
+
+    /** @test */
+    public function a_comment_can_be_liked_once()
+    {
+        $comment = factory(Comment::class)->create();
+
+        $this->actingAs( factory(User::class)->create());
+
+        $comment->like();
+
+        $this->assertEquals(1, $comment->likes->count() );
+
+    }
+
+    /** @test */
+    public function a_comment_knows_if_it_has_been_liked()
+    {
+        $comment = factory(Comment::class)->create();
+
+        $this->assertFalse($comment->isLiked());
+
+        $this->actingAs( factory(User::class)->create());
+
+        $this->assertFalse($comment->isLiked());
+
+
+        $comment->like();
+
+        $this->assertTrue($comment->isLiked());
+
+    }
+
+    /** @test */
+    public function a_comment_knows_how_many_likes_it_has()
+    {
+        $comment = factory(Comment::class)->create();
+
+        $this->assertEquals(0, $comment->likesCount() );
+
+        factory(Like::class, 2)->create([
+            'likeable_id' => $comment->id,
+            'likeable_type' => get_class($comment)
+        ]);
+
+        $this->assertEquals(2, $comment->likesCount() );
+    }
 }
