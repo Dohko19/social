@@ -1,16 +1,10 @@
 <template>
     <button
-        class="btn btn-link"
-        v-if="status.is_liked"
-        dusk="unlike-btn"
-        @click="unlike(status)">
-        <strong><i class="fas fa-thumbs-up text-primary btn-sm mr-1"></i> TE GUSTA</strong>
-    </button>
-    <button
-        class="btn btn-link"
-        v-else dusk="like-btn"
-        @click="like(status)">
-        <i class="far fa-thumbs-up text-primary btn-sm mr-1"></i> ME GUSTA
+        :class="getBtnClases"
+        @click="toggle()">
+        <strong><i :class="getIconClases"></i>
+            {{ getText }}
+        </strong>
     </button>
 
 </template>
@@ -18,35 +12,56 @@
 <script>
     export default {
         props: {
-            status: {
+            model: {
                 type: Object,
+                required: true
+            },
+            url: {
+                type: String,
                 required: true
             }
         },
         methods: {
-            like(status){
-                axios.post(`/statuses/${status.id}/likes`)
-                    .then((res) => {
-                        status.is_liked = true;
-                        status.likes_count++;
-                    }).catch((err) => {
-                    console.log(err)
-                });
-            },
-            unlike(status){
-                axios.delete(`/statuses/${status.id}/likes`)
-                    .then((res) => {
-                        status.is_liked = false;
-                        status.likes_count--;
-
-                    }).catch((err) => {
-                    console.log(err)
-                });
+            toggle(){
+                let method = this.model.is_liked ? 'delete' : 'post';
+                axios[method](this.url)
+                .then(res => {
+                    this.model.is_liked = ! this.model.is_liked;
+                    if (method === 'post')
+                    {
+                        this.model.likes_count++;
+                    }
+                    else
+                    {
+                        this.model.likes_count--;
+                    }
+                })
             }
+        },
+        computed: {
+            getText(){
+                return this.model.is_liked ? 'TE GUSTA' : 'ME GUSTA';
+            },
+            getBtnClases(){
+                return [
+                    this.model.is_liked ? 'font-weight-bold' : '',
+                    'btn', 'btn-link', 'btn-sm',
+                ]
+            },
+            getIconClases(){
+                return [
+                    this.model.is_liked ? 'fa' : 'far',
+                    'fa-thumbs-up','text-primary','btn-sm','mr-1',
+                ]
+            },
         }
     }
 </script>
 
-<style scoped>
-
+<style lang="scss" scoped>
+ .comment-like-btn{
+     font-size: 0.6em;
+     padding-left: 0;
+     i { display:none }
+ }
 </style>
