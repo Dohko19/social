@@ -2069,6 +2069,9 @@ __webpack_require__.r(__webpack_exports__);
   components: {
     StatusListItem: _StatusListItem__WEBPACK_IMPORTED_MODULE_0__["default"]
   },
+  props: {
+    url: String
+  },
   data: function data() {
     return {
       statuses: []
@@ -2077,7 +2080,7 @@ __webpack_require__.r(__webpack_exports__);
   mounted: function mounted() {
     var _this = this;
 
-    axios.get('/statuses').then(function (res) {
+    axios.get(this.getUrl).then(function (res) {
       _this.statuses = res.data.data;
     })["catch"](function (err) {
       console.log(err.response.data);
@@ -2085,6 +2088,11 @@ __webpack_require__.r(__webpack_exports__);
     EventBus.$on('status-created', function (status) {
       _this.statuses.unshift(status);
     });
+  },
+  computed: {
+    getUrl: function getUrl() {
+      return this.url ? this.url : '/statuses';
+    }
   }
 });
 
@@ -2100,7 +2108,6 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _LiKeBtn__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./LiKeBtn */ "./resources/js/components/LiKeBtn.vue");
-//
 //
 //
 //
@@ -38740,7 +38747,7 @@ var render = function() {
                     _c("img", {
                       staticClass: "rounded shadow-sm mr-2",
                       attrs: {
-                        src: _vm.currentUser.user_avatar,
+                        src: _vm.currentUser.avatar,
                         alt: _vm.currentUser.user_name,
                         width: "34px"
                       }

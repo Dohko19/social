@@ -23,6 +23,15 @@ Route::delete('comments/{comment}/likes', 'CommentLikesController@destroy')->nam
 //User Routes
 Route::get('@{user}', 'UsersController@show')->name('users.show');
 
+//User statuses route
+Route::get('users/{user}', 'UsersStatusController@index')->name('users.statuses.index');
+
+//Rutas Amistades
+Route::post('friendship/{recipient}', 'FriendShipsController@store')->name('friendships.store');
+
+//Request Friendship routes
+Route::post('request-friendships/{sender}', 'RequestFriendshipsController@store')->name('request-friendships.store');
+
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');

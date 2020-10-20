@@ -10,7 +10,7 @@
                 <div class="card-body bg-light">
                     <form method="POST" action="{{ route('login') }}">
                         @csrf
-
+                        @include('partials.validation-errors')
                         <div class="form-group row">
                             <label for="email" class="col-md-4 col-form-label text-md-right">{{ __('Direccion E-Mail ') }}</label>
 
@@ -58,7 +58,7 @@
 
                         <div class="form-group row mb-0">
                             <div class="col-md-8 offset-md-4">
-                                <button id="login-btn" type="submit" class="btn btn-primary">
+                                <button dusk="login-btn" type="submit" class="btn btn-primary">
                                     {{ __('Iniciar Sesion') }}
                                 </button>
 

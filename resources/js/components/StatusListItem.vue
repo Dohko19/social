@@ -44,11 +44,10 @@
                             ></like-btn>
                         </div>
                     </div>
-
                 </div>
                 <form @submit.prevent="addComment" v-if="isAuthenticated">
                     <div class="d-flex align-items-center">
-                        <img :src="currentUser.user_avatar" :alt="currentUser.user_name" width="34px" class="rounded shadow-sm mr-2">
+                        <img :src="currentUser.avatar" :alt="currentUser.user_name" width="34px" class="rounded shadow-sm mr-2">
                         <div class="input-group">
                             <textarea class="form-control border-0 shadow-sm" placeholder="Escribe un Comentario..."
                                       name="comment"
