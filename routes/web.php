@@ -24,14 +24,18 @@ Route::delete('comments/{comment}/likes', 'CommentLikesController@destroy')->nam
 Route::get('@{user}', 'UsersController@show')->name('users.show');
 
 //User statuses route
-Route::get('users/{user}', 'UsersStatusController@index')->name('users.statuses.index');
+Route::get('users/{user}/statuses', 'UsersStatusController@index')->name('users.statuses.index');
 
 //Rutas Amistades
-Route::post('friendship/{recipient}', 'FriendShipsController@store')->name('friendships.store');
+Route::post('friendship/{recipient}', 'FriendShipsController@store')->name('friendships.store')->middleware('auth');
+Route::delete('friendship/{recipient}', 'FriendShipsController@destroy')->name('friendships.destroy')->middleware('auth');
 
-//Request Friendship routes
-Route::post('request-friendships/{sender}', 'RequestFriendshipsController@store')->name('request-friendships.store');
+//Accept Friendship routes
+Route::get('friends/requests', 'AcceptFriendshipsController@index')->name('accept-friendships.index')->middleware('auth');
+Route::post('accept-friendships/{sender}', 'AcceptFriendshipsController@store')->name('accept-friendships.store')->middleware('auth');
+Route::delete('accept-friendships/{sender}', 'AcceptFriendshipsController@destroy')->name('accept-friendships.destroy')->middleware('auth');
 
 Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');
+//Route::get('/home', 'HomeController@index')->name('home');
+

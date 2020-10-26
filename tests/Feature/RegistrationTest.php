@@ -232,7 +232,7 @@ class RegistrationTest extends TestCase
 
         $this->post(
             route('register'),
-            $this->userValidateData(['email' => 'invalido@gmail'])
+            $this->userValidateData(['email' => 'invalidogmail'])
         )->assertSessionHasErrors('email');
     }
 
