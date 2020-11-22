@@ -26,6 +26,8 @@ export default {
     },
     methods: {
         toggleFriendShipStatus(){
+            this.redirectIfGuest();
+
             let method = this.getMethod();
             axios[method](`friendship/${this.recipient.name}`)
             .then(res => {
@@ -36,7 +38,7 @@ export default {
             })
         },
         getMethod(){
-            if (this.localFriendshipStatus === 'pending')
+            if (this.localFriendshipStatus === 'pending' || this.localFriendshipStatus === 'accepted')
             {
                 return 'delete';
             }
@@ -49,6 +51,16 @@ export default {
             if( this.localFriendshipStatus === 'pending')
             {
                 return 'Cancelar Solicitud';
+
+            }
+            if( this.localFriendshipStatus === 'accepted')
+            {
+                return 'Eliminar de mis amigos';
+
+            }
+            if( this.localFriendshipStatus === 'denied')
+            {
+                return 'Solicitud denegada';
 
             }
             return 'Solicitar Amistad';

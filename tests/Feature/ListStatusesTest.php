@@ -57,7 +57,7 @@ class ListStatusesTest extends TestCase
         $otherStatuses = factory(Status::class, 2)->create();
 
         $response = $this->actingAs($user)
-            ->getJson(route('users.statuses.show', $user));
+            ->getJson(route('users.statuses.index', $user));
 
         $response->assertJson([
             'meta' => ['total' => 2]
