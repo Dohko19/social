@@ -2,13 +2,12 @@
 
 namespace Tests\Feature;
 
-use App\Http\Resources\StatusResource;
-use App\Models\Status;
 use App\User;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Tests\TestCase;
+use App\Models\Status;
 use App\Events\StatusCreated;
 use Illuminate\Support\Facades\Event;
+use App\Http\Resources\StatusResource;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class CreateStatusTest extends TestCase
@@ -23,7 +22,6 @@ class CreateStatusTest extends TestCase
         $response->assertStatus(401);
     }
 
-
     /** @test */
     public function an_authenticate_user_can_create_statuses()
     {
@@ -35,7 +33,7 @@ class CreateStatusTest extends TestCase
 
 
        // when => cuando hace un post request a status
-       $response = $this->postJson  (route('statuses.store'), ['body' => 'mi primer estado']);
+       $response = $this->postJson(route('statuses.store'), ['body' => 'mi primer estado']);
 
        $response->assertJson([
            'data' => ['body' => 'mi primer estado']
@@ -49,6 +47,8 @@ class CreateStatusTest extends TestCase
 
     }
 
+
+
     /** @test */
     public function an_event_is_fired_when_a_status_is_created()
     {
@@ -61,17 +61,17 @@ class CreateStatusTest extends TestCase
         $this->actingAs($user)->postJson(route('statuses.store'), ['body' => 'mi primer estado']);
 
         Event::assertDispatched(StatusCreated::class, function ($statusCreatedEvent) {
-            $this->assertInstanceOf(ShouldBroadcast::class, $statusCreatedEvent);
             $this->assertInstanceOf(StatusResource::class, $statusCreatedEvent->status);
-            $this->assertInstanceOf(Status::class, $statusCreatedEvent->status->resource);
-            $this->assertEquals(Status::first()->id, $statusCreatedEvent->status->id);
-            $this->assertEquals(
-                'socket-id',
-                $statusCreatedEvent->socket,
-                'The event '. get_class($statusCreatedEvent) . 'must call the method "dontBoradcastToCurrentUser" in the constructor'  );
+            $this->assertTrue(Status::first()->is($statusCreatedEvent->status->resource) );
+            $this->assertEventChannelType('public', $statusCreatedEvent);
+            $this->assertEventChannelName('statuses', $statusCreatedEvent);
+            $this->assertDontBoradcastToCurrentUser($statusCreatedEvent);
+
+
             return true;
         });
     }
+
 
     /** @test */
     public function a_status_requires_a_body()

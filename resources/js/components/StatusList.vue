@@ -35,7 +35,6 @@ export default {
         });
 
         Echo.channel('statuses').listen('StatusCreated', ({status}) => {
-            console.log(status);
             this.statuses.unshift(status);
         });
     },

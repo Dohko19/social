@@ -22,44 +22,15 @@
                     <span dusk="likes-count">{{ status.likes_count }}</span>
                 </div>
             </div>
-            <div class="card-footer">
-                <div v-for="comment in comments" class="mb-3">
-                    <div class="d-flex">
-                        <img :src="comment.user.avatar" :alt="comment.user.name" height="34px" width="34px" class="rounded shadow-sm mr-2">
-                        <div class="flex-grow-1">
-                            <div class="card border-0 shadow-sm">
-                                <div class="card-body p-2 text-secondary" >
-                                    <a :href="comment.user.link"> <strong>{{ comment.user.name }}</strong> </a>
-                                    {{ comment.body }}
-                                </div>
-                            </div>
-                            <small class="float-right badge badge-pill py-1 px-2 mt-1 badge-primary" dusk="comment-likes-count">
-                                <i class="fa fa-thumbs-up"></i>
-                                {{ comment.likes_count}}</small>
-                            <like-btn
-                                dusk="comment-like-btn"
-                                :url="`/comments/${comment.id}/likes`"
-                                :model="comment"
-                                class="comment-like-btn"
-                            ></like-btn>
-                        </div>
-                    </div>
-                </div>
-                <form @submit.prevent="addComment" v-if="isAuthenticated">
-                    <div class="d-flex align-items-center">
-                        <img :src="currentUser.avatar" :alt="currentUser.user_name" width="34px" class="rounded shadow-sm mr-2">
-                        <div class="input-group">
-                            <textarea class="form-control border-0 shadow-sm" placeholder="Escribe un Comentario..."
-                                      name="comment"
-                                      v-model="newComment"
-                                      rows="1"
-                                      required></textarea>
-                            <div class="input-group-append">
-                                <button class="btn btn-primary" dusk="comment-btn">Enviar</button>
-                            </div>
-                        </div>
-                    </div>
-                </form>
+            <div class="card-footer pb-0" v-if="isAuthenticated || status.comments.length">
+                <comment-list
+                :comments="status.comments"
+                :status-id="status.id"
+                ></comment-list>
+
+                <comment-form
+                    :status-id="status.id"
+                ></comment-form>
             </div>
         </div>
     </div>
@@ -67,6 +38,9 @@
 
 <script>
     import LikeBtn from './LiKeBtn'
+    import CommentList from './CommentList';
+    import CommentForm from './CommentForm';
+
     export default {
         props: {
             status: {
@@ -74,25 +48,7 @@
                 required: true
             }
         },
-        components: { LikeBtn },
-        data(){
-            return {
-                newComment: '',
-                comments: this.status.comments
-            }
-        },
-        methods: {
-            addComment(){
-                axios.post(`/statuses/${this.status.id}/comments`, { body: this.newComment })
-                .then(res => {
-                    this.newComment = '';
-                    this.comments.push(res.data.data);
-                })
-                .catch(err => {
-                    console.log(err.response.data);
-                })
-            }
-        }
+        components: { LikeBtn, CommentList, CommentForm }
     }
 </script>
 
