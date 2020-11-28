@@ -1,34 +1,20 @@
 <template>
     <div>
-        <div v-for="comment in comments" class="mb-3">
-            <div class="d-flex">
-                <img :src="comment.user.avatar" :alt="comment.user.name" height="34px" width="34px" class="rounded shadow-sm mr-2">
-                <div class="flex-grow-1">
-                    <div class="card border-0 shadow-sm">
-                        <div class="card-body p-2 text-secondary" >
-                            <a :href="comment.user.link"> <strong>{{ comment.user.name }}</strong> </a>
-                            {{ comment.body }}
-                        </div>
-                    </div>
-                    <small class="float-right badge badge-pill py-1 px-2 mt-1 badge-primary" dusk="comment-likes-count">
-                        <i class="fa fa-thumbs-up"></i>
-                        {{ comment.likes_count}}</small>
-                    <like-btn
-                        dusk="comment-like-btn"
-                        :url="`/comments/${comment.id}/likes`"
-                        :model="comment"
-                        class="comment-like-btn"
-                    ></like-btn>
-                </div>
-            </div>
-        </div>
+        <transition-group name="comment-list-transition">
+            <comment-list-item
+                v-for="comment in comments"
+                :comment="comment"
+                :key="comment.id"
+                class="mb-3">
+            </comment-list-item>
+        </transition-group>
     </div>
 </template>
 
 <script>
-import LikeBtn from './LiKeBtn';
+import CommentListItem from './CommentListItem';
 export default {
-    components: { LikeBtn },
+    components: { CommentListItem },
     props: {
         comments: {
             type:Array,
@@ -52,5 +38,7 @@ export default {
 </script>
 
 <style scoped>
-
+    .comment-list-transition-move{
+        transition: all .3s;
+    }
 </style>

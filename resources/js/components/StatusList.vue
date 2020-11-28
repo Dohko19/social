@@ -35,7 +35,7 @@ export default {
         });
 
         Echo.channel('statuses').listen('StatusCreated', ({status}) => {
-            this.statuses.unshift(status);
+            this.statuses.unshift(status); //socket io and pusher
         });
     },
     computed:{

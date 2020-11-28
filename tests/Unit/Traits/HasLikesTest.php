@@ -2,7 +2,11 @@
 
 namespace Tests\Unit\Traits;
 
+use App\Events\ModelLiked;
+use App\Events\ModelUnLiked;
 use App\User;
+use Illuminate\Support\Facades\Broadcast;
+use Illuminate\Support\Facades\Event;
 use Tests\TestCase;
 use App\Models\Like;
 use App\Traits\HasLikes;
@@ -14,10 +18,19 @@ class HasLikesTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function setUp() :void
+    {
+        parent::setUp();
+
+        \Schema::create('model_with_likes', function($table){
+            $table->increments('id');
+        });
+    }
+
     /** @test  */
     public function a_model_morph_many_likes()
     {
-        $model = new ModelWithLikes(['id' => 1]);
+        $model = ModelWithLike::create();
 
         factory(Like::class)->create([
             'likeable_id' => $model->id,
@@ -30,7 +43,8 @@ class HasLikesTest extends TestCase
     /** @test */
     public function a_model_can_be_like_and_unlike()
     {
-        $model = new ModelWithLikes(['id' => 1]);
+        $model = ModelWithLike::create();
+
 
         $this->actingAs( factory(User::class)->create());
 
@@ -46,7 +60,8 @@ class HasLikesTest extends TestCase
     /** @test */
     public function a_model_can_be_liked_once()
     {
-        $model = new ModelWithLikes(['id' => 1]);
+        $model = ModelWithLike::create();
+
 
 
         $this->actingAs( factory(User::class)->create());
@@ -64,7 +79,8 @@ class HasLikesTest extends TestCase
     /** @test */
     public function a_model_knows_if_it_has_been_liked()
     {
-        $model = new ModelWithLikes(['id' => 1]);
+        $model = ModelWithLike::create();
+
 
         $this->assertFalse($model->isLiked());
 
@@ -82,7 +98,8 @@ class HasLikesTest extends TestCase
     /** @test */
     public function a_model_knows_how_many_likes_it_has()
     {
-        $model = new ModelWithLikes(['id' => 1]);
+        $model = ModelWithLike::create();
+
 
 
         $this->assertEquals(0, $model->likesCount() );
@@ -94,13 +111,80 @@ class HasLikesTest extends TestCase
 
         $this->assertEquals(2, $model->likesCount() );
     }
+
+    /** @test */
+    public function an_event_is_fired_when_a_model_is_like()
+    {
+        Event::fake([ModelLiked::class]);
+        Broadcast::shouldReceive('socket')->andReturn('socket-id');
+        $this->actingAs( factory(User::class)->create());
+
+        $model = new ModelWithLike(['id' => 1]);
+
+        $model->like();
+
+
+        Event::assertDispatched(ModeLliked::class, function ($event) {
+            $this->assertInstanceOf(ModelWithLike::class, $event->model);
+            $this->assertEventChannelType('public', $event);
+            $this->assertEventChannelName($event->model->eventChannelName(), $event);
+            $this->assertDontBoradcastToCurrentUser($event);
+
+
+            return true;
+        });
+    }
+
+    /** @test */
+    public function an_event_is_fired_when_a_model_is_unlike()
+    {
+        Event::fake([ModelUnLiked::class]);
+        Broadcast::shouldReceive('socket')->andReturn('socket-id');
+        $this->actingAs( factory(User::class)->create());
+
+        $model = ModelWithLike::create();
+
+        $model->likes()->firstOrCreate([
+            'user_id' => auth()->id()
+        ]);
+
+
+        $model->unlike();
+
+
+        Event::assertDispatched(ModelUnLiked::class, function ($event) {
+            $this->assertInstanceOf(ModelWithLike::class, $event->model);
+            $this->assertEventChannelType('public', $event);
+            $this->assertEventChannelName($event->model->eventChannelName(), $event);
+            $this->assertDontBoradcastToCurrentUser($event);
+
+
+            return true;
+        });
+    }
+
+    /** @test */
+    public function can_get_the_event_channel_name()
+    {
+        $model = new ModelWithLike(['id' => 1]);
+
+        $this->assertEquals(
+            "modelwithlikes.1.likes",
+            $model->eventChannelName()
+        );
+    }
+
+
 }
 
 
 
-class ModelWithLikes extends Model
+class ModelWithLike extends Model
 {
     use HasLikes;
 
+    public $timestamps = false;
     protected $fillable = ['id'];
 }
+
+
