@@ -2,17 +2,45 @@
 
 namespace Tests\Unit\Listeners;
 
-use PHPUnit\Framework\TestCase;
+use App\Events\ModelLiked;
+use App\Models\Status;
+use App\Notifications\NewLikeNotification;
+use App\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Notification;
+use Tests\TestCase;
 
 class SendNewLikeNotificationTest extends TestCase
 {
+    use RefreshDatabase;
     /**
      * A basic unit test example.
      *
-     * @return void
+     * @test
      */
-    public function testExample()
+    public function a_notification_is_sent_when_user_receives_a_new_like()
     {
-        $this->assertTrue(true);
+        Notification::fake();
+        $statusOwner = factory(User::class)->create();
+        $likeSender = factory(User::class)->create();
+        $status = factory(Status::class)->create(['user_id' => $statusOwner->id]);
+
+        $status->likes()->create([
+            'user_id' => $likeSender->id
+        ]);
+
+        ModelLiked::dispatch($status, $likeSender);
+
+        Notification::assertSentTo(
+            $statusOwner,
+            NewLikeNotification::class,
+            function($notification, $channels) use ($likeSender, $status){
+                $this->assertContains('database', $channels);
+                $this->assertContains('broadcast', $channels);
+                $this->assertTrue($notification->model->is($status));
+                $this->assertTrue($notification->likeSender->is($likeSender));
+
+                return true;
+        });
     }
 }

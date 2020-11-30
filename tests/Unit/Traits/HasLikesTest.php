@@ -25,6 +25,9 @@ class HasLikesTest extends TestCase
         \Schema::create('model_with_likes', function($table){
             $table->increments('id');
         });
+
+        Event::fake([ModelLiked::class,ModelUnLiked::class]);
+
     }
 
     /** @test  */
@@ -115,17 +118,17 @@ class HasLikesTest extends TestCase
     /** @test */
     public function an_event_is_fired_when_a_model_is_like()
     {
-        Event::fake([ModelLiked::class]);
         Broadcast::shouldReceive('socket')->andReturn('socket-id');
-        $this->actingAs( factory(User::class)->create());
+        $this->actingAs( $likeSender = factory(User::class)->create());
 
         $model = new ModelWithLike(['id' => 1]);
 
         $model->like();
 
 
-        Event::assertDispatched(ModeLliked::class, function ($event) {
+        Event::assertDispatched(ModeLliked::class, function ($event) use ($likeSender) {
             $this->assertInstanceOf(ModelWithLike::class, $event->model);
+            $this->assertTrue( $event->likeSender->is($likeSender));
             $this->assertEventChannelType('public', $event);
             $this->assertEventChannelName($event->model->eventChannelName(), $event);
             $this->assertDontBoradcastToCurrentUser($event);
@@ -138,9 +141,8 @@ class HasLikesTest extends TestCase
     /** @test */
     public function an_event_is_fired_when_a_model_is_unlike()
     {
-        Event::fake([ModelUnLiked::class]);
         Broadcast::shouldReceive('socket')->andReturn('socket-id');
-        $this->actingAs( factory(User::class)->create());
+        $this->actingAs( $likeSender = factory(User::class)->create());
 
         $model = ModelWithLike::create();
 
@@ -152,7 +154,7 @@ class HasLikesTest extends TestCase
         $model->unlike();
 
 
-        Event::assertDispatched(ModelUnLiked::class, function ($event) {
+        Event::assertDispatched(ModelUnLiked::class, function ($event){
             $this->assertInstanceOf(ModelWithLike::class, $event->model);
             $this->assertEventChannelType('public', $event);
             $this->assertEventChannelName($event->model->eventChannelName(), $event);
@@ -185,6 +187,11 @@ class ModelWithLike extends Model
 
     public $timestamps = false;
     protected $fillable = ['id'];
+
+    public function path()
+    {
+        // TODO: Implement path() method.
+    }
 }
 
 

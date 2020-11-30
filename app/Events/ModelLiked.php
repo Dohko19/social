@@ -13,17 +13,21 @@ use Illuminate\Queue\SerializesModels;
 class ModelLiked implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
+
     public $model;
+    public $likeSender;
 
     /**
      * Create a new event instance.
      *
      * @param $model
+     * @param $likeSender
      */
-    public function __construct($model)
+    public function __construct($model, $likeSender)
     {
         $this->dontBroadcastToCurrentUser();
-            $this->model = $model;
+        $this->model = $model;
+        $this->likeSender = $likeSender;
     }
 
     /**

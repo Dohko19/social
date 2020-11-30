@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 class Status extends Model
 {
     use HasLikes;
-    
+
     protected $guarded = [];
 
     public function user()
@@ -20,6 +20,11 @@ class Status extends Model
     public function comments()
     {
         return $this->hasMany(Comment::class);
+    }
+
+    public function path()
+    {
+        return route('statuses.show', $this);
     }
 
 }
