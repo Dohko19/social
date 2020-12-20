@@ -1,18 +1,22 @@
 <template>
-    <div>
-        <div v-if="localFriendShipStatus === 'pending' ">
-            <span v-text="sender.name"></span> te ha enviado una solicitud de amistad
-            <button @click="acceptFriendshipRequest">Aceptar solicitud</button>
-            <button dusk="deny-friendship" @click="denyFriendshipRequest">Denegar solicitud</button>
+    <div class="d-flex justify-content-between bg-light p-3 rounded mb-3 shadow-sm">
+        <div>
+            <div v-if="localFriendShipStatus === 'pending' ">
+                <span v-text="sender.name"></span> te ha enviado una solicitud de amistad
+            </div>
+            <div v-if="localFriendShipStatus === 'accepted'">
+                Tu y <span v-text="sender.name"></span> son amigos
+            </div>
+            <div v-if="localFriendShipStatus === 'denied'">
+                Solicitud denegada de <span v-text="sender.name"></span>
+            </div>
+            <div v-if="localFriendShipStatus === 'deleted'">Solicitud eliminada de <span v-text="sender.name"></span></div>
         </div>
-        <div v-else-if="localFriendShipStatus === 'accepted'">
-            Tu y <span v-text="sender.name"></span> son amigos
+        <div>
+            <button class="btn btn-sm btn-primary" v-if="localFriendShipStatus === 'pending' " @click="acceptFriendshipRequest">Aceptar solicitud</button>
+            <button class="btn btn-sm btn-warning" v-if="localFriendShipStatus === 'pending'" dusk="deny-friendship" @click="denyFriendshipRequest">Denegar solicitud</button>
+            <button class="btn btn-sm btn-danger" v-if="localFriendShipStatus !== 'deleted'" dusk="delete-friendship" @click="deleteFriendship">Eliminar</button>
         </div>
-        <div v-else-if="localFriendShipStatus === 'denied'">
-            Solicitud denegada de <span v-text="sender.name"></span>
-        </div>
-        <div v-if="localFriendShipStatus === 'deleted'">Solicitud eliminada</div>
-        <button v-else dusk="delete-friendship" @click="deleteFriendship">Eliminar</button>
     </div>
 </template>
 

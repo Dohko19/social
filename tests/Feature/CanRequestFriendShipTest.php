@@ -54,6 +54,22 @@ class CanRequestFriendShipTest extends TestCase
     }
 
     /** @test */
+    public function can_get_all_friendship_requests_received()
+    {
+        $sender = factory(User::class)->create();
+        $recipient = factory(User::class)->create();
+
+        $sender->sendFriendRequestTo($recipient);
+        factory(Friendship::class, 2)->create();
+
+        $this->actingAs($recipient);
+
+        $response = $this->get(route('accept-friendships.index'));
+
+        $this->assertCount(1, $response->viewData('friendshipRequests'));
+    }
+
+    /** @test */
     public function a_user_cannot_send_friend_request_to_itself()
     {
         $sender = factory(User::class)->create();

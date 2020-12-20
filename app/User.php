@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Models\Friendship;
 use App\Models\Status;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -65,5 +66,44 @@ class User extends Authenticatable
     public function statuses()
     {
         return $this->hasMany(Status::class);
+    }
+
+    public function friendshipRequestReceived()
+    {
+        return $this->hasMany(Friendship::class, 'recipient_id');
+    }
+
+    public function friendshipRequestSent()
+    {
+        return $this->hasMany(Friendship::class, 'sender_id');
+    }
+
+    public function sendFriendRequestTo($recipient)
+    {
+        return $this->friendshipRequestSent()->firstOrCreate([
+            'recipient_id' => $recipient->id
+        ]);
+    }
+
+    public function acceptFriendRequestFrom($sender)
+    {
+        $friendship = $this->friendshipRequestReceived()->where([
+            'sender_id' => $sender->id,
+        ])->first();
+
+        $friendship->update(['status' => 'accepted']);
+
+        return $friendship;
+    }
+
+    public function denyFriendRequestFrom($sender)
+    {
+        $friendship = $this->friendshipRequestReceived()->where([
+            'sender_id' => $sender->id,
+        ])->first();
+
+        $friendship->update(['status' => 'denied']);
+
+        return $friendship;
     }
 }

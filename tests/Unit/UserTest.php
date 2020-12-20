@@ -2,6 +2,7 @@
 
 namespace Tests\Unit;
 
+use App\Models\Friendship;
 use App\Models\Status;
 use App\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -44,5 +45,57 @@ class UserTest extends TestCase
         factory(Status::class)->create(['user_id' => $user->id]);
 
         $this->assertInstanceOf(Status::class, $user->statuses->first());
+    }
+
+    /** @test */
+    public function a_user_can_send_friend_request()
+    {
+        $sender = factory(User::class)->create();
+        $recipient = factory(User::class)->create();
+        $friendship =  $sender->sendFriendRequestTo($recipient);
+
+        $this->assertTrue($friendship->sender->is($sender));
+        $this->assertTrue($friendship->recipient->is($recipient));
+    }
+
+    /** @test */
+    public function a_user_can_accept_friend_request()
+    {
+        $sender = factory(User::class)->create();
+        $recipient = factory(User::class)->create();
+
+        $sender->sendFriendRequestTo($recipient);
+
+        $friendship = $recipient->acceptFriendRequestFrom($sender);
+
+        $this->assertEquals('accepted', $friendship->status);
+    }
+
+    /** @test */
+    public function a_user_can_deny_friend_request()
+    {
+        $sender = factory(User::class)->create();
+        $recipient = factory(User::class)->create();
+
+        $sender->sendFriendRequestTo($recipient);
+
+        $friendship = $recipient->denyFriendRequestFrom($sender);
+
+        $this->assertEquals('denied', $friendship->status);
+    }
+
+    /** @test */
+    public function a_user_can_get_all_their_friend_request()
+    {
+        $sender = factory(User::class)->create();
+        $recipient = factory(User::class)->create();
+
+        $sender->sendFriendRequestTo($recipient);
+
+        $this->assertCount(1, $recipient->friendshipRequestReceived);
+        $this->assertInstanceOf(Friendship::class, $recipient->friendshipRequestReceived->first());
+
+        $this->assertCount(1, $sender->friendshipRequestSent);
+        $this->assertInstanceOf(Friendship::class, $sender->friendshipRequestSent->first());
     }
 }
