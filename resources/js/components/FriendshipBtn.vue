@@ -13,16 +13,19 @@ export default {
         recipient: {
             type: Object,
             required: true
-        },
-        friendshipStatus: {
-            type: String,
-            required: true
         }
     },
-    data(){
-        return {
-            localFriendshipStatus: this.friendshipStatus
-        }
+    data: () => ({
+        friendshipStatus: ''
+    }),
+    created() {
+        axios.get(`/friendships/${this.recipient.name}`)
+        .then(res => {
+            this.friendshipStatus = res.data.friendship_status;
+        })
+        .catch(err => {
+            console.log(err.response.data)
+        })
     },
     methods: {
         toggleFriendShipStatus(){
@@ -31,14 +34,14 @@ export default {
             let method = this.getMethod();
             axios[method](`friendship/${this.recipient.name}`)
             .then(res => {
-                this.localFriendshipStatus = res.data.friendship_status;
+                this.friendshipStatus = res.data.friendship_status;
             })
             .catch(err => {
                 console.log(err.response.data)
             })
         },
         getMethod(){
-            if (this.localFriendshipStatus === 'pending' || this.localFriendshipStatus === 'accepted')
+            if (this.friendshipStatus === 'pending' || this.friendshipStatus === 'accepted')
             {
                 return 'delete';
             }
@@ -48,22 +51,22 @@ export default {
     },
     computed: {
         getText(){
-            if( this.localFriendshipStatus === 'pending')
+            if( this.friendshipStatus === 'pending')
             {
-                return 'Cancelar Solicitud';
+                return 'Cancelar solicitud';
 
             }
-            if( this.localFriendshipStatus === 'accepted')
+            if( this.friendshipStatus === 'accepted')
             {
                 return 'Eliminar de mis amigos';
 
             }
-            if( this.localFriendshipStatus === 'denied')
+            if( this.friendshipStatus === 'denied')
             {
                 return 'Solicitud denegada';
 
             }
-            return 'Solicitar Amistad';
+            return 'Solicitar amistad';
         }
     }
 }

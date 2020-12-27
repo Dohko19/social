@@ -32,6 +32,9 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('accept-friendships.index') }}">{{ __('Solicitudes') }}</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('friends.index') }}">{{ __('Amigos') }}</a>
+                    </li>
                     <notification-list><i class="fa fa-bell"></i></notification-list>
                     <li class="nav-item dropdown">
                         <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>

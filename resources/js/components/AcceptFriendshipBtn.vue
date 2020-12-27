@@ -13,7 +13,7 @@
             <div v-if="localFriendShipStatus === 'deleted'">Solicitud eliminada de <span v-text="sender.name"></span></div>
         </div>
         <div>
-            <button class="btn btn-sm btn-primary" v-if="localFriendShipStatus === 'pending' " @click="acceptFriendshipRequest">Aceptar solicitud</button>
+            <button class="btn btn-sm btn-primary" v-if="localFriendShipStatus === 'pending'" dusk="accept-friendship" @click="acceptFriendshipRequest">Aceptar solicitud</button>
             <button class="btn btn-sm btn-warning" v-if="localFriendShipStatus === 'pending'" dusk="deny-friendship" @click="denyFriendshipRequest">Denegar solicitud</button>
             <button class="btn btn-sm btn-danger" v-if="localFriendShipStatus !== 'deleted'" dusk="delete-friendship" @click="deleteFriendship">Eliminar</button>
         </div>
