@@ -33,9 +33,17 @@ import Echo from 'laravel-echo';
 
 window.Pusher = require('pusher-js');
 
+import io from 'socket.io-client';
+window.io = io;
+
 window.Echo = new Echo({
-    broadcaster: 'pusher',
-    key: process.env.MIX_PUSHER_APP_KEY,
-    cluster: process.env.MIX_PUSHER_APP_CLUSTER,
-    forceTLS: true
+    broadcaster: 'socket.io',
+    host: `${window.location.hostname}:6001`,
+    rejectUnauthorized: false,
+    client: io
+    // transports: ['websocket']
+    // broadcaster: 'pusher',
+    // key: process.env.MIX_PUSHER_APP_KEY,
+    // cluster: process.env.MIX_PUSHER_APP_CLUSTER,
+    // forceTLS: true
 });

@@ -33,10 +33,12 @@ export default {
         EventBus.$on('status-created', status => {
             this.statuses.unshift(status);
         });
-
-        Echo.channel('statuses').listen('StatusCreated', ({status}) => {
-            this.statuses.unshift(status); //socket io and pusher
+        let pusher = 'StatusCreated';
+        let io = '.StatusCreated';
+        Echo.channel('statuses').listen(pusher, ({status}) => {
+            this.statuses.unshift(status); //socket io and pusher // With socket.IO version 2.3.0 using a DAT after name of listen event
         });
+
     },
     computed:{
         getUrl(){

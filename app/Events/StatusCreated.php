@@ -36,4 +36,9 @@ class StatusCreated implements ShouldBroadcast
     {
         return new Channel('statuses');
     }
+
+    public function broadcastAs()
+    {
+        return 'StatusCreated';
+    }
 }
